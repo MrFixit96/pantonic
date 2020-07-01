@@ -1,4 +1,5 @@
-FROM pandoc/ubuntu-core
+ARG base_tag="stable"
+FROM pandoc/ubuntu-crossref:${base_tag}
 
 RUN apt update
 
@@ -6,30 +7,60 @@ RUN apt install -y pandoc \
 	tree \
 	rust
 
-RUN dnf install -y cargo \
-	openssl openssl-devel openssl-static \
-        fontconfig-devel \
+RUN apt install --assume-yes --no-install-recommends
+        cargo \
+	openssl \
+        openssl-devel \
+        openssl-static \
+        libfontconfig1 \
+        libfontconfig-devel \
         libicu-dev \
-	freetype-devel \
+	libfreetype6 \
+	libfreetype6-devel \
+        librsvg2-bin
 	harfbuzz-devel \
 	graphite2-devel \
 	libpng-devel \
 	zlib-devel \
 	pkgconf-pkg-config \
-        gcc-c++
+        wget \
+        xzdec \
+        gcc-c++ \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
 RUN cargo install tectonic
 
-RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
-        chmod +x /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "-v" ]
+#RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
+#        chmod +x /entrypoint.sh
+#ENTRYPOINT [ "/entrypoint.sh" ]
+#CMD [ "-v" ]
 
-COPY Dockerfile /Dockerfile
-WORKDIR /data
+# DANGER: this will vary for different distributions,
+# particularly the `linux` suffix. Ubuntu linux is a glibc based
+# distribution, adjust depending on the distro.
+# `-linux` ---------------------------> vvvvvv
+ENV PATH="/opt/texlive/texdir/bin/x86_64-linux:${PATH}"
+WORKDIR /root
+
+COPY common/latex/texlive.profile /root/texlive.profile
+COPY common/latex/install-texlive.sh /root/install-texlive.sh
+# Don't include linuxmusl, ubuntu is a glibc distro
+RUN sed -i'' -e 's/^\(binary_x86_64-linuxmusl\) 1/\1 0/' \
+        /root/texlive.profile
+
+RUN /root/install-texlive.sh
+
+COPY common/latex/install-tex-packages.sh /root/install-tex-packages.sh
+RUN /root/install-tex-packages.sh
+
+RUN rm -f /root/texlive.profile \
+          /root/install-texlive.sh \
+          /root/install-tex-packages.sh
+
 
 USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
+WORKDIR /data

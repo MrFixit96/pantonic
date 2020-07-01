@@ -29,7 +29,7 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /e
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "-v" ]
 
-COPY Dockerfile /Dockerfile
+COPY Dockerfile.fedora /Dockerfile.fedora
 WORKDIR /data
 
 USER pandoc:pandoc
