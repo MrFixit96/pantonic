@@ -20,10 +20,10 @@ RUN dnf install -y cargo \
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
-USER pandoc:pandoc
+#USER pandoc:pandoc
 RUN cargo install tectonic
 
-USER root:root
+#USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]

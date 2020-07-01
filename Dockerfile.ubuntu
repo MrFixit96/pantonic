@@ -1,14 +1,15 @@
-FROM ubuntu:latest
+FROM pandoc/ubuntu-core:latest
 
-RUN dnf makecache
+RUN apt update
 
-RUN dnf install -y pandoc \
+RUN apt install -y pandoc \
 	tree \
 	rust
 
 RUN dnf install -y cargo \
 	openssl openssl-devel openssl-static \
         fontconfig-devel \
+        libicu-dev \
 	freetype-devel \
 	harfbuzz-devel \
 	graphite2-devel \
@@ -20,10 +21,8 @@ RUN dnf install -y cargo \
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
-USER pandoc:pandoc
 RUN cargo install tectonic
 
-USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
