@@ -1,4 +1,4 @@
-ARG base_tag="stable"
+ARG base_tag=""
 FROM pandoc/ubuntu-crossref:${base_tag}
 
 RUN apt update
