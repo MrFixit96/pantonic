@@ -7,7 +7,7 @@ RUN apt install -y pandoc \
 	tree \
 	rust
 
-RUN apt install --assume-yes --no-install-recommends
+RUN apt install --assume-yes --no-install-recommends \
         cargo \
 	openssl \
         openssl-devel \
