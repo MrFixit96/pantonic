@@ -1,7 +1,7 @@
-ARG base_tag=""
-FROM pandoc/ubuntu-crossref:${base_tag}
+ARG base_ver=18.04
+FROM pandoc/ubuntu-crossref:${base_ver}
 
-RUN apt update
+RUN apt update && apt-get -y upgrade
 
 RUN apt install -y pandoc \
 	tree \
@@ -26,17 +26,37 @@ RUN apt install --assume-yes --no-install-recommends \
         wget \
         xzdec \
         gcc-c++ \
-        && rm -rf /var/lib/apt/lists/*
+	pandoc-citeproc\
+	tex-common\
+	latex-cjk-all\
+	texlive-generic-extra\
+	texlive-lang-cjk\
+	texlive-lang-polish\
+	texlive-latex-extra\
+	texlive-pictures\
+	texlive-science\
+	texlive-fonts-recommended\
+	texlive-fonts-extra\
+	texlive-metapost\
+	texlive-bibtex-extra\
+	texlive-publishers\
+	biber\
+	asymptote\
+	gnuplot\
+	poppler-utils\
+	pngcheck\
+	imagemagick\
+        make \
+&& apt-get clean \
+&& rm -rf /var/lib/apt/lists/*\
 
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
 RUN cargo install tectonic
 
-#RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
-#        chmod +x /entrypoint.sh
-#ENTRYPOINT [ "/entrypoint.sh" ]
-#CMD [ "-v" ]
+RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
+        chmod +x /entrypoint.sh
 
 # DANGER: this will vary for different distributions,
 # particularly the `linux` suffix. Ubuntu linux is a glibc based
@@ -64,3 +84,5 @@ RUN rm -f /root/texlive.profile \
 USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
 WORKDIR /data
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "-v" ]
