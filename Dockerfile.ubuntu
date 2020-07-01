@@ -1,4 +1,4 @@
-FROM pandoc/ubuntu-core:latest
+FROM pandoc/ubuntu-core
 
 RUN apt update
 
