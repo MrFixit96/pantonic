@@ -1,13 +1,14 @@
 ARG base_ver=18.04
+ARG DEBIAN_FRONTEND=noninteractive
 FROM ubuntu:${base_ver}
 
-RUN apt update && apt-get -y upgrade  && DEBIAN_FRONTEND=noninteractive\
+RUN apt update && apt-get -y upgrade
 
 RUN apt install -y pandoc \
 	tree \
-	rustc 
+	rustc
 
-RUN apt install --assume-yes --no-install-recommends \
+RUN  apt install --assume-yes --no-install-recommends \
         cargo \
 	openssl \
         libssl1.1 \
