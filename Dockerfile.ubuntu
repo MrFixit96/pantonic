@@ -17,7 +17,7 @@ RUN apt install --assume-yes --no-install-recommends \
         libicu-dev \
 	libfreetype6 \
 	libfreetype6-devel \
-        librsvg2-bin
+        librsvg2-bin \
 	harfbuzz-devel \
 	graphite2-devel \
 	libpng-devel \
