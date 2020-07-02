@@ -4,9 +4,14 @@ FROM ubuntu:${base_ver}
 
 RUN apt update && apt-get -y upgrade
 
-RUN apt install -y pandoc \
+RUN apt install -y \
 	tree \
-	rustc
+	rustc \
+        wget
+RUN wget https://github.com/jgm/pandoc/releases/download/2.10/pandoc-2.10-1-amd64.deb \
+&& dpkg -i pandoc-2.10-1-amd64.deb \
+&& rm -rf pandoc-2.10-1-amd64.deb
+
 RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-selections \
 &&  apt-get install -y -q --no-install-recommends \
         cargo \
@@ -26,7 +31,6 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
         wget \
         xzdec \
         g++ \
-        tree \
 	pandoc-citeproc\
 	pngcheck\
 	imagemagick\
@@ -43,8 +47,8 @@ RUN cargo install tectonic
 USER pandoc:pandoc
 ENV PATH="/home/pandoc/.cargo/bin:${PATH}"
 
-#RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
-#        chmod +x /home/pandoc/entrypoint.sh
+#RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
+        chmod +x /home/pandoc/entrypoint.sh
 
 WORKDIR /data
 ENTRYPOINT [ "/usr/bin/pandoc" ]
