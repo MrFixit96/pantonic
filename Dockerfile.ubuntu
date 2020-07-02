@@ -47,12 +47,11 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 	pngcheck\
 	imagemagick\
         make \
-        tzdatarun \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*\
 && echo "${TZ}" > /etc/timezone\
 && ln -sf "/usr/share/zoneinfo/${TZ}" /etc/localtime\
-&& dpkg-reconfigure --frontend noninteractive tzdata\
+&& dpkg-reconfigure --frontend noninteractive tzdata
 
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
