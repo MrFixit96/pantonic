@@ -15,8 +15,8 @@ FROM pandoc/latex
 
 RUN set -x && \
     addgroup -g 82 -S pandoc && \
-    adduser -u 82 -D -S -G pandoc pandoc && \
-    apk del .build-deps
+    adduser -u 82 -D -S -G pandoc pandoc 
+
 USER pandoc:pandoc
 ENV PATH="/home/pandoc/.cargo/bin:/usr/local/cargo/bin:/usr/local/cargo/pandoc:${PATH}"
 
