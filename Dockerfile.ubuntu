@@ -23,35 +23,16 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 	libgraphite2-dev \
 	libpng-dev \
 	lua-zlib-dev \
-	pkgconf \
         wget \
         xzdec \
-        build-essential \
+        g++ \
+        tree \
 	pandoc-citeproc\
-	tex-common\
-	latex-cjk-all\
-	texlive-generic-extra\
-	texlive-lang-polish\
-	texlive-latex-extra\
-	texlive-pictures\
-	texlive-science\
-	texlive-fonts-recommended\
-	texlive-fonts-extra\
-	texlive-metapost\
-	texlive-bibtex-extra\
-	texlive-publishers\
-	biber\
-	asymptote\
-	gnuplot\
-	poppler-utils\
 	pngcheck\
 	imagemagick\
         make \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*\
-&& echo "${TZ}" > /etc/timezone\
-&& ln -sf "/usr/share/zoneinfo/${TZ}" /etc/localtime\
-&& dpkg-reconfigure --frontend noninteractive tzdata
 
 
 RUN adduser pandoc && \
@@ -61,14 +42,6 @@ RUN cargo install tectonic
 
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
-
-# DANGER: this will vary for different distributions,
-# particularly the `linux` suffix. Ubuntu linux is a glibc based
-# distribution, adjust depending on the distro.
-# `-linux` ---------------------------> vvvvvv
-ENV PATH="/opt/texlive/texdir/bin/x86_64-linux:${PATH}"
-WORKDIR /root
-
 
 USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
