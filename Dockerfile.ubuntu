@@ -35,7 +35,7 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 && rm -rf /var/lib/apt/lists/*\
 
 
-RUN adduser pandoc --home-dir=/home/pandoc && \
+RUN adduser pandoc --home=/home/pandoc && \
 	chmod -R 755 /home/pandoc
 
 RUN cargo install tectonic
