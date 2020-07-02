@@ -69,11 +69,6 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /e
 ENV PATH="/opt/texlive/texdir/bin/x86_64-linux:${PATH}"
 WORKDIR /root
 
-# Don't include linuxmusl, ubuntu is a glibc distro
-RUN sed -i'' -e 's/^\(binary_x86_64-linuxmusl\) 1/\1 0/' \
-        /root/texlive.profile
-
-
 
 USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
