@@ -1,38 +1,15 @@
 FROM rust:alpine as builder
+ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
+RUN apk --no-cache add fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ && \
+    cargo install tectonic && \
+    adduser -S tectonic
 
-ENV BUILD_DEPS \
-    alpine-sdk \
-    coreutils \
-    ghc \
-    libffi \
-    musl-dev \
-    zlib-dev
+USER tectonic
+ENV PATH="/usr/local/cargo/bin:${PATH}"
+WORKDIR /home/tectonic
 
-ENV PERSISTENT_DEPS \
-    fontconfig-dev \
-    graphite2-dev \
-    harfbuzz-dev \
-    icu-dev \
-    openssl-dev \
-    g++ \
-    graphviz \
-    openjdk11-jre \
-    sed \
-
-
-# Install/Build Packages
-RUN apk upgrade --update && \
-    apk add --virtual .build-deps $BUILD_DEPS && \
-    apk add --virtual .persistent-deps $PERSISTENT_DEPS && \
-
-
-# Set to non root user
-USER pandoc
-
-# Reset the work dir
-WORKDIR /data
-
-RUN cargo install tectonic
+ENTRYPOINT ["/usr/local/cargo/bin/tectonic"]
+CMD ["--help"]
 
 
 FROM pandoc/latex
