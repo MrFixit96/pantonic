@@ -35,16 +35,17 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 && rm -rf /var/lib/apt/lists/*\
 
 
-RUN adduser pandoc && \
-	chmod -R 755 ~pandoc
+RUN adduser pandoc --home-dir=/home/pandoc && \
+	chmod -R 755 /home/pandoc
 
 RUN cargo install tectonic
+
+USER pandoc:pandoc
+ENV PATH="/home/pandoc/.cargo/bin:${PATH}"
 
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
 
-USER pandoc:pandoc
-ENV PATH="~pandoc/.cargo/bin:${PATH}"
 WORKDIR /data
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "-v" ]
