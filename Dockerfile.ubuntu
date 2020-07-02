@@ -43,9 +43,9 @@ RUN cargo install tectonic
 USER pandoc:pandoc
 ENV PATH="/home/pandoc/.cargo/bin:${PATH}"
 
-RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
-        chmod +x /entrypoint.sh
+RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
+        chmod +x /home/pandoc/entrypoint.sh
 
 WORKDIR /data
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
 CMD [ "-v" ]
