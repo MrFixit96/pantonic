@@ -23,6 +23,8 @@ ENV PATH="/home/pandoc/.cargo/bin:/usr/local/cargo/bin:/usr/local/cargo/pandoc:$
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
+RUN echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      
 # copy tectonic binary to new image
 COPY --from=builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
