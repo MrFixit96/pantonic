@@ -15,12 +15,13 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
+  BUILDER_IMAGE_NAME: pantonic-builder
   IMAGE_NAME: pantonic
 
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
+  test-builder:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,20 +29,76 @@ jobs:
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      
+      - name: Pull container   
+        run: docker pull docker.pkg.github.com/${{ github.repository }}/$BUILDER_IMAGE_NAME || true
 
-      - name: Run tests
+      - name: Run builder
         run: |
           if [ -f docker-compose.test.yml ]; then
             docker-compose --file docker-compose.test.yml build
             docker-compose --file docker-compose.test.yml run sut
           else
-            docker build . --file Dockerfile.alpine --cache-from=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+            docker build . --target builder --file Dockerfile.alpine --cache-from=docker.pkg.github.com/${{ github.repository }}/$BUILDER_IMAGE_NAME
           fi
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
-  push:
+  push-builder:
     # Ensure test job passes before pushing image.
-    needs: test
+    needs: test-builder
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build . --target builder --file Dockerfile.alpine --tag $BUILDER_IMAGE_NAME
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$BUILDER_IMAGE_NAME
+          
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          # Use Docker `latest` tag convention
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $BUILDER_IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+  test-main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      
+      - name: Pull container   
+        run: docker pull docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME || true
+
+      - name: Run builder
+        run: |
+          if [ -f docker-compose.test.yml ]; then
+            docker-compose --file docker-compose.test.yml build
+            docker-compose --file docker-compose.test.yml run sut
+          else
+            docker build . --target builder --file Dockerfile.alpine --cache-from=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+          fi
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push-main:
+    # Ensure test job passes before pushing image.
+    needs: test-main
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
