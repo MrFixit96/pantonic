@@ -1,4 +1,4 @@
-FROM alpine:3.12.0
+FROM alpine:3.12.0 as pantonic-builder
 ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
 RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ && \
     cargo install tectonic && \
@@ -26,11 +26,11 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \
 RUN echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
       
 # copy tectonic binary to new image
-COPY --from=builder /usr/local/cargo/bin/tectonic /usr/bin/
+COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
-COPY --from=builder /root/.cache/Tectonic/ /root/.cache/Tectonic/
+COPY --from=pantonic-builder /root/.cache/Tectonic/ /root/.cache/Tectonic/
 # copy biber binary to new image
-COPY --from=builder /usr/bin/biber /usr/bin/
+COPY --from=pantonic-builder /usr/bin/biber /usr/bin/
 
 ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
 CMD [ "-v" ]
