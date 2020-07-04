@@ -75,6 +75,8 @@ jobs:
           docker tag $BUILDER_IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
   test-main:
+    # Ensure test job passes before pushing image.
+    needs: push-builder    
     runs-on: ubuntu-latest
 
     steps:
