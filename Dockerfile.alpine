@@ -8,8 +8,6 @@ USER tectonic
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 WORKDIR /home/tectonic
 
-ENTRYPOINT ["/usr/local/cargo/bin/tectonic"]
-CMD ["--help"]
 
 FROM pandoc/latex
 
@@ -32,4 +30,4 @@ COPY --from=pantonic-builder /tectonic/.cache/Tectonic/ /tectonic/.cache/Tectoni
 COPY --from=pantonic-builder /usr/bin/biber /usr/bin/
 
 ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
-CMD [ "-v" ]
+CMD [ "--help" ]
