@@ -32,7 +32,7 @@ jobs:
       
       - name: Pull container   
 #        run: docker pull docker.pkg.github.com/${{ github.repository }}/$BUILDER_IMAGE_NAME || true
-        run: docker pull docker.pkg.github.com/mrfixit96/$BUILDER_IMAGE_NAME || true
+        run: docker pull docker.pkg.github.com/mrfixit96/pantonic/$BUILDER_IMAGE_NAME || true
 
       - name: Run builder
         run: |
@@ -88,10 +88,10 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
       - name: Pull Builder Container   
-        run: docker pull docker.pkg.github.com/mrfixit96/$BUILDER_IMAGE_NAME || true
+        run: docker pull docker.pkg.github.com/mrfixit96/pantonic/$BUILDER_IMAGE_NAME || true
       
       - name: Pull Container   
-        run: docker pull docker.pkg.github.com/mrfixit96/$IMAGE_NAME || true
+        run: docker pull docker.pkg.github.com/mrfixit96/pantonic/$IMAGE_NAME || true
 
       - name: Run builder
         run: |
@@ -99,7 +99,7 @@ jobs:
             docker-compose --file docker-compose.test.yml build
             docker-compose --file docker-compose.test.yml run sut
           else
-            docker build . --file Dockerfile.alpine --cache-from=docker.pkg.github.com/mrfixit96/$IMAGE_NAME
+            docker build . --file Dockerfile.alpine --cache-from=docker.pkg.github.com/mrfixit96/pantonic/$IMAGE_NAME
           fi
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
