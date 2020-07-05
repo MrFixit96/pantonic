@@ -27,7 +27,7 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \
 # copy tectonic binary to new image
 COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
-COPY --from=pantonic-builder /root/.cache/Tectonic/ /root/.cache/Tectonic/
+COPY --from=pantonic-builder /pandoc/.cache/Tectonic/ /pandoc/.cache/Tectonic/
 # copy biber binary to new image
 COPY --from=pantonic-builder /usr/bin/biber /usr/bin/
 
