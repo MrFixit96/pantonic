@@ -35,7 +35,7 @@ USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
 
 # Running tectonic once to cache needed files that get downloaded at first run
-RUN /home/pandoc/.cargo/bin/tectonic main.tex || true
+RUN /home/pandoc/.cargo/bin/tectonic prime-cache.tex || true
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "-v" ]

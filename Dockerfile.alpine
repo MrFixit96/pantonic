@@ -24,7 +24,7 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"'
 COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 
 # Run tectonic once to download necessary libraries and prime the cache
-RUN /usr/bin/tectonic main.tex || true
+RUN /usr/bin/tectonic prime-cache.tex || true
 RUN chown -R pandoc:pandoc /home/pandoc/.cache/Tectonic/
 
 
