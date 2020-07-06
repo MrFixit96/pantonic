@@ -21,10 +21,10 @@ RUN dnf install -y cargo \
 RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
-USER pandoc:pandoc
-RUN cargo install tectonic && cp -rf /home/pandoc/.cargo/bin/tectonic /usr/local/bin/
+RUN cargo install tectonic && \ 
+    cp -rf /root/.cargo/bin/tectonic /usr/local/bin/ && \
+    chown pandoc:pandoc /usr/local/bin/tectonic
 
-USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
 
@@ -35,7 +35,7 @@ USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
 
 # Running tectonic once to cache needed files that get downloaded at first run
-RUN /usr/local/bin/tectonic main.tex || true
+RUN /home/pandoc/.cargo/bin/tectonic main.tex || true
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "-v" ]

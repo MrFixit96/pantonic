@@ -1,4 +1,4 @@
-FROM alpine:3.12.0 as pantonic-builder
+FROM alpine:latest as pantonic-builder
 ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
 RUN apk update && apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ libstdc++6 harfbuzz-icu icu-libs && \
     cargo install tectonic && \
@@ -11,12 +11,11 @@ WORKDIR /home/tectonic
 
 FROM pandoc/latex
 
-RUN apk update && apk --no-cache add fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev libstdc++6 harfbuzz-icu icu-libs && \
+RUN apk update && apk --no-cache add fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ libstdc++6 harfbuzz-icu icu icu-libs && \
     set -x && \
     addgroup -g 82 -S pandoc && \
     adduser -u 82 -D -S -G pandoc pandoc 
 
-ENV PATH="/usr/local/bin/:${PATH}"
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
