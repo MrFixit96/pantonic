@@ -15,9 +15,10 @@ RUN dnf install -y cargo \
 	libpng-devel \
 	zlib-devel \
 	pkgconf-pkg-config \
-        gcc-c++
+        gcc-c++ \
+&& dnf clean all
 
-RUN adduser pandoc && \
+RUN adduser pandoc --system && \
 	chmod -R 755 ~pandoc
 
 USER pandoc:pandoc

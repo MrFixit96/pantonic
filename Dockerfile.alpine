@@ -1,6 +1,6 @@
 FROM alpine:3.12.0 as pantonic-builder
 ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
-RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ && \
+RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ libstdc++6 harfbuzz-icu icu-libs && \
     cargo install tectonic && \
     adduser -S tectonic
 
@@ -27,5 +27,5 @@ COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
 COPY --from=pantonic-builder /home/tectonic/.cache/Tectonic/ /home/tectonic/.cache/Tectonic/
 
-ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
-CMD [ "--help" ]
+#ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
+#CMD [ "--help" ]
