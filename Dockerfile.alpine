@@ -1,31 +1,34 @@
 FROM alpine:3.12.0 as pantonic-builder
 ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
-RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ libstdc++6 harfbuzz-icu icu-libs && \
+RUN apk update && apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ libstdc++6 harfbuzz-icu icu-libs && \
     cargo install tectonic && \
     adduser -S tectonic
 
 USER tectonic
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 WORKDIR /home/tectonic
-RUN /usr/local/cargo/bin/tectonic mail.tex || true
+
 
 FROM pandoc/latex
 
-RUN set -x && \
+RUN apk update && apk --no-cache add fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev libstdc++6 harfbuzz-icu icu-libs && \
+    set -x && \
     addgroup -g 82 -S pandoc && \
     adduser -u 82 -D -S -G pandoc pandoc 
 
-USER pandoc:pandoc
-ENV PATH="/home/pandoc/.cargo/bin:/usr/local/cargo/bin:/usr/local/bin/:${PATH}"
-
-RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
+ENV PATH="/usr/local/bin/:${PATH}"
+RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
       
 # copy tectonic binary to new image
 COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
-# reuse tectonic cache from compiling tex files
-COPY --from=pantonic-builder /home/tectonic/.cache/Tectonic/ /home/tectonic/.cache/Tectonic/
 
-ENTRYPOINT [ "/usr/bin/pandoc" ]
+# Run tectonic once to download necessary libraries and prime the cache
+RUN /usr/bin/tectonic main.tex || true
+RUN chown -R pandoc:pandoc /home/pandoc/.cache/Tectonic/
+
+
+USER pandoc:pandoc
+ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
 CMD [ "--help" ]
