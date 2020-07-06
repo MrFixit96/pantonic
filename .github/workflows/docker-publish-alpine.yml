@@ -16,7 +16,7 @@ on:
 env:
   # TODO: Change variable to your image's name.
   BUILDER_IMAGE_NAME: pantonic-builder
-  IMAGE_NAME: pantonic
+  IMAGE_NAME: pantonic-alpine
 
 jobs:
   # Run tests.
