@@ -21,7 +21,7 @@ RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
 USER pandoc:pandoc
-RUN cargo install tectonic
+RUN cargo install tectonic && cp -rf /home/pandoc/.cargo/tectonic /usr/local/bin/
 
 USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
@@ -34,7 +34,7 @@ USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
 
 # Running tectonic once to cache needed files that get downloaded at first run
-RUN tectonic main.tex
+RUN /usr/local/bin/tectonic main.tex
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "-v" ]

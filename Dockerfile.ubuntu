@@ -38,20 +38,16 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/*
 
+RUN cargo install tectonic && cp -rf /root/.cargo/bin/tectonic /usr/local/bin/
 
-RUN adduser pandoc --home=/home/pandoc && \
-	chmod -R 755 /home/pandoc
+RUN adduser pandoc --system --home=/home/pandoc && \
+	chmod -R 744 /home/pandoc
 
-RUN cargo install tectonic
-
-USER pandoc:pandoc
-ENV PATH="/home/pandoc/.cargo/bin:${PATH}"
+# running tectonic once to get required downloads cached
+RUN /usr/local/bin/tectonic main.tex
 
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
-
-# running tectonic once to get required downloads cached
-RUN tectonic main.tex
 
 WORKDIR /data
 ENTRYPOINT [ "/usr/bin/pandoc" ]
