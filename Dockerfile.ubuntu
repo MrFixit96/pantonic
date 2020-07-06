@@ -44,7 +44,7 @@ RUN adduser pandoc --system --home=/home/pandoc && \
 	chmod -R 744 /home/pandoc
 
 # running tectonic once to get required downloads cached
-RUN /usr/local/bin/tectonic main.tex
+RUN /usr/local/bin/tectonic main.tex || true
 
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
