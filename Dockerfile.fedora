@@ -18,11 +18,11 @@ RUN dnf install -y cargo \
         gcc-c++ \
 && dnf clean all
 
-RUN adduser pandoc --system && \
+RUN adduser pandoc && \
 	chmod -R 755 ~pandoc
 
 USER pandoc:pandoc
-RUN cargo install tectonic && cp -rf /home/pandoc/.cargo/tectonic /usr/local/bin/
+RUN cargo install tectonic && cp -rf /home/pandoc/.cargo/bin/tectonic /usr/local/bin/
 
 USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \

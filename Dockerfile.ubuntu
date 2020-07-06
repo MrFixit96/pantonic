@@ -40,7 +40,7 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 
 RUN cargo install tectonic && cp -rf /root/.cargo/bin/tectonic /usr/local/bin/
 
-RUN adduser pandoc --system --home=/home/pandoc && \
+RUN adduser pandoc --home=/home/pandoc && \
 	chmod -R 744 /home/pandoc
 
 # running tectonic once to get required downloads cached
