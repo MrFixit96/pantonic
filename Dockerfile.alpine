@@ -7,7 +7,7 @@ RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-
 USER tectonic
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 WORKDIR /home/tectonic
-
+RUN /usr/local/cargo/bin/tectonic mail.tex || true
 
 FROM pandoc/latex
 
@@ -25,9 +25,7 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \
 # copy tectonic binary to new image
 COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
-COPY --from=pantonic-builder /tectonic/.cache/Tectonic/ /tectonic/.cache/Tectonic/
-# copy biber binary to new image
-COPY --from=pantonic-builder /usr/bin/biber /usr/bin/
+COPY --from=pantonic-builder /home/tectonic/.cache/Tectonic/ /home/tectonic/.cache/Tectonic/
 
 ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
 CMD [ "--help" ]
