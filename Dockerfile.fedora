@@ -26,11 +26,15 @@ RUN cargo install tectonic
 USER root:root
 RUN printf '#!/bin/bash\n\nset -eux\n\n/bin/tree .\n/usr/bin/pandoc \"$@\"' > /entrypoint.sh && \
         chmod +x /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
-CMD [ "-v" ]
 
 COPY Dockerfile.fedora /Dockerfile.fedora
 WORKDIR /data
 
 USER pandoc:pandoc
 ENV PATH="~pandoc/.cargo/bin:${PATH}"
+
+# Running tectonic once to cache needed files that get downloaded at first run
+RUN tectonic main.tex
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "-v" ]

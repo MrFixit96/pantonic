@@ -50,6 +50,9 @@ ENV PATH="/home/pandoc/.cargo/bin:${PATH}"
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
+# running tectonic once to get required downloads cached
+RUN tectonic main.tex
+
 WORKDIR /data
 ENTRYPOINT [ "/usr/bin/pandoc" ]
 CMD [ "-v" ]
