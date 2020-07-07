@@ -18,7 +18,7 @@ RUN set -x && \
 USER pandoc:pandoc
 ENV PATH="/home/pandoc/.cargo/bin:/usr/local/cargo/bin:/usr/local/cargo/pandoc:${PATH}"
 
-RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
+RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
       
@@ -26,6 +26,6 @@ RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/local/bin/pandoc \
 COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
 # reuse tectonic cache from compiling tex files
 COPY --from=pantonic-builder /home/tectonic/.cache/Tectonic/ /home/tectonic/.cache/Tectonic/
-
+RUN /usr/bin/tectonic prime-cache.tex
 ENTRYPOINT [ "/home/pandoc/entrypoint.sh" ]
 CMD [ "--help" ]
