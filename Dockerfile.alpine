@@ -1,3 +1,7 @@
+#
+# TODO: This dockerfile builds but when you run pandoc/tectonic, it fails missing libicu which we've already installed
+#
+
 FROM alpine:3.12.0 as pantonic-builder
 ENV CARGO_INSTALL_ROOT="/usr/local/cargo"
 RUN apk --no-cache add rust cargo fontconfig-dev graphite2-dev harfbuzz-dev icu-dev openssl-dev zlib-dev g++ && \

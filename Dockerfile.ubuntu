@@ -8,9 +8,6 @@ RUN apt install -y \
 	tree \
 	rustc \
         wget
-RUN wget https://github.com/jgm/pandoc/releases/download/2.10/pandoc-2.10-1-amd64.deb \
-&& dpkg -i pandoc-2.10-1-amd64.deb \
-&& rm -rf pandoc-2.10-1-amd64.deb
 
 RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-selections \
 &&  apt-get install -y -q --no-install-recommends \
@@ -40,15 +37,28 @@ RUN  echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-select
 
 RUN cargo install tectonic && cp -rf /root/.cargo/bin/tectonic /usr/local/bin/
 
-RUN adduser pandoc --home=/home/pandoc && \
-	chmod -R 744 /home/pandoc
 
-# running tectonic once to get required downloads cached
-RUN /usr/local/bin/tectonic prime-cache.tex || true
+FROM pandoc/latex
+
+RUN set -x && \
+    addgroup -g 82 -S pandoc && \
+    adduser -u 82 -D -S -G pandoc pandoc
+
+USER pandoc:pandoc
+ENV PATH="/home/pandoc/.cargo/bin:/usr/local/cargo/bin:/usr/local/cargo/pandoc:${PATH}"
 
 RUN printf '#!/bin/bash\n\nset -eux\n\n//usr/bin/tree .\n/usr/bin/pandoc \"$@\"' > /home/pandoc/entrypoint.sh && \
         chmod +x /home/pandoc/entrypoint.sh
 
+
+# copy tectonic binary to new image
+COPY --from=pantonic-builder /usr/local/cargo/bin/tectonic /usr/bin/
+
+# reuse tectonic cache from compiling tex files
+COPY --from=pantonic-builder /home/tectonic/.cache/Tectonic/ /home/tectonic/.cache/Tectonic/
+RUN /usr/bin/tectonic prime-cache.tex || true
+
+
 WORKDIR /data
 ENTRYPOINT [ "/usr/bin/pandoc" ]
-CMD [ "-v" ]
+CMD [ "--help" ]
