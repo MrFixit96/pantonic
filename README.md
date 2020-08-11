@@ -10,7 +10,7 @@ then run the script provided `publish-md.sh` or create your own.
 
 
 **pubish-md.sh:**
-
+```shell
 #!/bin/bash
 if [[ $PANDOC_IMG ]] && [[ $DOCNAME ]]  && [[ $DOCTEMPLATE ]];then
 
@@ -21,3 +21,4 @@ elif  [[ $PANDOC_IMG ]] && [[ $DOCNAME ]];then
   docker run  -v `pwd`:/data -v `pwd`/../Assets:/Assets -v `pwd`/../Assets:/assets $PANDOC_IMG -t latex --pdf-engine=tectonic --from markdown --listings -V linkcolor:blue --output ${DOCNAME}.pdf "${DOCNAME}.md"
 
 fi
+```
