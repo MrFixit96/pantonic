@@ -6,10 +6,10 @@ There are working builds for Ubuntu and Fedora and github actions to automatical
 
 To use them create environment variables `PANDOC_IMG` `DOCNAME` and optionally, `DOCTEMPLATE`
 
-then run the script provided `publish-md.sh` or create your own.
+then run the script provided `publish-md` or create your own.
 
 
-**pubish-md.sh:**
+**pubish-md:**
 ```shell
 #!/bin/bash
 if [[ $PANDOC_IMG ]] && [[ $DOCNAME ]]  && [[ $DOCTEMPLATE ]];then
