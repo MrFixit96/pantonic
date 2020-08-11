@@ -14,11 +14,31 @@ then run the script provided `publish-md` or create your own.
 #!/bin/bash
 if [[ $PANDOC_IMG ]] && [[ $DOCNAME ]]  && [[ $DOCTEMPLATE ]];then
 
-  docker run  -v `pwd`:/data -v `pwd`/../Assets:/Assets -v `pwd`/../Assets:/assets $PANDOC_IMG -t latex --pdf-engine=tectonic --from markdown --listings -V linkcolor:blue --template= ${DOCTEMPLATE} --output ${DOCNAME}.pdf "${DOCNAME}.md"
+  docker run  -v `pwd`:/data \
+              -v `pwd`/../Assets:/Assets \
+              -v `pwd`/../Assets:/assets \
+              $PANDOC_IMG \
+              -t latex \
+              --pdf-engine=tectonic \
+              --from markdown \
+              --listings -V linkcolor:blue \
+              --template= ${DOCTEMPLATE} \
+              --output ${DOCNAME}.pdf \
+              "${DOCNAME}.md"
 
 elif  [[ $PANDOC_IMG ]] && [[ $DOCNAME ]];then
 
-  docker run  -v `pwd`:/data -v `pwd`/../Assets:/Assets -v `pwd`/../Assets:/assets $PANDOC_IMG -t latex --pdf-engine=tectonic --from markdown --listings -V linkcolor:blue --output ${DOCNAME}.pdf "${DOCNAME}.md"
+  docker run  -v `pwd`:/data \
+              -v `pwd`/../Assets:/Assets \
+              -v `pwd`/../Assets:/assets \
+              $PANDOC_IMG \
+              -t latex \
+              --pdf-engine=tectonic \
+              --from markdown \
+              --listings \
+              -V linkcolor:blue \
+              --output ${DOCNAME}.pdf \
+              "${DOCNAME}.md"
 
 fi
 ```
