@@ -6,6 +6,22 @@ There are working builds for Ubuntu and Fedora and github actions to automatical
 
 To use them create environment variables `PANDOC_IMG` `DOCNAME` and optionally, `DOCTEMPLATE`
 
+Given a directory structure where you have a parent directory with an Assets subdirectory along 
+with subdirectoryies for each letter of the alphabet and a child directory for each project
+inside of those...
+
+```text
+.
+..
+Assets
+A
+\
+ ABC-Co
+B
+\
+ BCD-Co
+```
+
 then run the script provided `publish-md` or create your own.
 
 
@@ -15,8 +31,8 @@ then run the script provided `publish-md` or create your own.
 if [[ $PANDOC_IMG ]] && [[ $DOCNAME ]]  && [[ $DOCTEMPLATE ]];then
 
   docker run  -v `pwd`:/data \
-              -v `pwd`/../Assets:/Assets \
-              -v `pwd`/../Assets:/assets \
+              -v `pwd`/../../Assets:/Assets \
+              -v `pwd`/../../Assets:/assets \
               $PANDOC_IMG \
               -t latex \
               --pdf-engine=tectonic \
@@ -29,8 +45,8 @@ if [[ $PANDOC_IMG ]] && [[ $DOCNAME ]]  && [[ $DOCTEMPLATE ]];then
 elif  [[ $PANDOC_IMG ]] && [[ $DOCNAME ]];then
 
   docker run  -v `pwd`:/data \
-              -v `pwd`/../Assets:/Assets \
-              -v `pwd`/../Assets:/assets \
+              -v `pwd`/../../Assets:/Assets \
+              -v `pwd`/../../Assets:/assets \
               $PANDOC_IMG \
               -t latex \
               --pdf-engine=tectonic \
