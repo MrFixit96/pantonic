@@ -4,7 +4,7 @@ This project builds a container with [Pandoc](https://pandoc.org) and [Tectonic]
 
 There are working builds for Ubuntu and Fedora and github actions to automatically compile both.
 
-To use them create environment variables `PANDOC_IMG` `DOCNAME` and optionally, `DOCTEMPLATE`
+To use them create environment variables `PANDOC_IMG` `DOCNAME` and optionally, `DOCTEMPLATE` where `DOCTEMPLATE` is a path starting with `/Assets`
 
 Given a directory structure where you have a parent directory with an Assets subdirectory along 
 with subdirectoryies for each letter of the alphabet and a child directory for each project
